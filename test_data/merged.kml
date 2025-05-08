@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+    <name>Merged KML File</name>
+    <open>1</open>
+    <LookAt>
+        <longitude>27.800685</longitude>
+        <latitude>38.488605</latitude>
+        <altitude>0</altitude>
+        <heading>0</heading>
+        <tilt>0</tilt>
+        <range>1000</range>
+        <altitudeMode>clampToGround</altitudeMode>
+    </LookAt>
+    <Style id="normal_style_0">
+        <BalloonStyle>
+        </BalloonStyle>
+        <LineStyle>
+            <color>ff0000ff</color>
+            <width>4</width>
+        </LineStyle>
+        <PolyStyle>
+            <color>8000ff00</color>
+            <fill>1</fill>
+            <outline>1</outline>
+        </PolyStyle>
+    </Style>
+    <Style id="highlight_style_0">
+        <BalloonStyle>
+        </BalloonStyle>
+        <LineStyle>
+            <color>ff0000ff</color>
+            <width>6</width>
+        </LineStyle>
+        <PolyStyle>
+            <color>8000ff00</color>
+            <fill>1</fill>
+            <outline>1</outline>
+        </PolyStyle>
+    </Style>
+    <Style id="normal_style_1">
+        <BalloonStyle>
+        </BalloonStyle>
+        <LineStyle>
+            <color>ffea00ff</color>
+            <width>2</width>
+        </LineStyle>
+        <PolyStyle>
+            <color>8000fffb</color>
+            <fill>1</fill>
+            <outline>1</outline>
+        </PolyStyle>
+    </Style>
+    <Style id="highlight_style_1">
+        <BalloonStyle>
+        </BalloonStyle>
+        <LineStyle>
+            <color>ffea00ff</color>
+            <width>4</width>
+        </LineStyle>
+        <PolyStyle>
+            <color>8000fffb</color>
+            <fill>1</fill>
+            <outline>1</outline>
+        </PolyStyle>
+    </Style>
+    <Style id="normal_style_2">
+        <BalloonStyle>
+        </BalloonStyle>
+        <LineStyle>
+            <color>ffff0004</color>
+            <width>2</width>
+        </LineStyle>
+        <PolyStyle>
+            <color>800095ff</color>
+            <fill>1</fill>
+            <outline>1</outline>
+        </PolyStyle>
+    </Style>
+    <Style id="highlight_style_2">
+        <BalloonStyle>
+        </BalloonStyle>
+        <LineStyle>
+            <color>ffff0004</color>
+            <width>4</width>
+        </LineStyle>
+        <PolyStyle>
+            <color>800095ff</color>
+            <fill>1</fill>
+            <outline>1</outline>
+        </PolyStyle>
+    </Style>
+    <StyleMap id="style_0">
+        <Pair>
+            <key>normal</key>
+            <styleUrl>#normal_style_0</styleUrl>
+        </Pair>
+        <Pair>
+            <key>highlight</key>
+            <styleUrl>#highlight_style_0</styleUrl>
+        </Pair>
+    </StyleMap>
+    <StyleMap id="style_1">
+        <Pair>
+            <key>normal</key>
+            <styleUrl>#normal_style_1</styleUrl>
+        </Pair>
+        <Pair>
+            <key>highlight</key>
+            <styleUrl>#highlight_style_1</styleUrl>
+        </Pair>
+    </StyleMap>
+    <StyleMap id="style_2">
+        <Pair>
+            <key>normal</key>
+            <styleUrl>#normal_style_2</styleUrl>
+        </Pair>
+        <Pair>
+            <key>highlight</key>
+            <styleUrl>#highlight_style_2</styleUrl>
+        </Pair>
+    </StyleMap>
+    <Placemark>
+        <name>Derbent Mahallesi 184-ada-6-parsel</name>
+        <styleUrl>#style_0</styleUrl>
+        <ExtendedData>
+            <Data name="Pafta">
+                <value>19N-2D</value>
+            </Data>
+            <Data name="İl">
+                <value>Manisa</value>
+            </Data>
+            <Data name="Nitelik">
+                <value>Arsa</value>
+            </Data>
+            <Data name="Alan">
+                <value>3.164,73</value>
+            </Data>
+            <Data name="Mahalle">
+                <value>Derbent</value>
+            </Data>
+            <Data name="İlçe">
+                <value>Turgutlu</value>
+            </Data>
+            <Data name="Ada">
+                <value>184</value>
+            </Data>
+            <Data name="ParselNo">
+                <value>6</value>
+            </Data>
+        </ExtendedData>
+        <Polygon><outerBoundaryIs><LinearRing><coordinates>27.801030000000001,38.48845
+27.800560000000001,38.488599999999998
+27.800239999999999,38.488709999999998
+27.800180000000001,38.488570000000003
+27.800059999999998,38.488309999999998
+27.800709999999999,38.488100000000003
+27.801030000000001,38.48845</coordinates></LinearRing></outerBoundaryIs></Polygon>
+    </Placemark>
+    <Placemark>
+        <name>Derbent Mahallesi 184-ada-3-parsel</name>
+        <styleUrl>#style_1</styleUrl>
+        <ExtendedData>
+            <Data name="Alan">
+                <value>2.360,25</value>
+            </Data>
+            <Data name="ParselNo">
+                <value>3</value>
+            </Data>
+            <Data name="Mahalle">
+                <value>Derbent</value>
+            </Data>
+            <Data name="Nitelik">
+                <value>Zeytinyağı Üretim Merkezi, Prina Havuzu Açık, Bina Havuzu Kapalı, Foseptik Ve Arsası</value>
+            </Data>
+            <Data name="İlçe">
+                <value>Turgutlu</value>
+            </Data>
+            <Data name="İl">
+                <value>Manisa</value>
+            </Data>
+            <Data name="Ada">
+                <value>184</value>
+            </Data>
+        </ExtendedData>
+        <Polygon><outerBoundaryIs><LinearRing><coordinates>27.800740000000001,38.48901
+27.80057,38.488610000000001
+27.801030000000001,38.488460000000003
+27.801310000000001,38.488759999999999
+27.801279999999998,38.48883
+27.800740000000001,38.48901</coordinates></LinearRing></outerBoundaryIs></Polygon>
+    </Placemark>
+    <Placemark>
+        <name>Derbent Mahallesi 184-ada-2-parsel</name>
+        <styleUrl>#style_2</styleUrl>
+        <ExtendedData>
+            <Data name="Ada">
+                <value>184</value>
+            </Data>
+            <Data name="İl">
+                <value>Manisa</value>
+            </Data>
+            <Data name="İlçe">
+                <value>Turgutlu</value>
+            </Data>
+            <Data name="ParselNo">
+                <value>2</value>
+            </Data>
+            <Data name="Alan">
+                <value>1.427,76</value>
+            </Data>
+            <Data name="Nitelik">
+                <value>Arsa</value>
+            </Data>
+            <Data name="Mahalle">
+                <value>Derbent</value>
+            </Data>
+        </ExtendedData>
+        <Polygon><outerBoundaryIs><LinearRing><coordinates>27.800560000000001,38.488599999999998
+27.800740000000001,38.488999999999997
+27.800409999999999,38.489109999999997
+27.800239999999999,38.488709999999998
+27.800560000000001,38.488599999999998</coordinates></LinearRing></outerBoundaryIs></Polygon>
+    </Placemark>
+</Document>
+</kml>

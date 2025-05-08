@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Placemark>
+    <name>Derbent Mahallesi 184-ada-2-parsel</name>
+    <ExtendedData>
+      <Data name="İl">
+        <value>Manisa</value>
+      </Data>
+      <Data name="İlçe">
+        <value>Turgutlu</value>
+      </Data>
+      <Data name="Mahalle">
+        <value>Derbent</value>
+      </Data>
+      <Data name="Ada">
+        <value>184</value>
+      </Data>
+      <Data name="ParselNo">
+        <value>2</value>
+      </Data>
+      <Data name="Alan">
+        <value>1.427,76</value>
+      </Data>
+      <Data name="Pafta">
+        <value />
+      </Data>
+      <Data name="Nitelik">
+        <value>Arsa</value>
+      </Data>
+      <Data name="Mevkii">
+        <value />
+      </Data>
+    </ExtendedData>
+    <Polygon>
+      <outerBoundaryIs>
+        <LinearRing>
+          <coordinates>27.800560000000001,38.488599999999998
+27.800740000000001,38.488999999999997
+27.800409999999999,38.489109999999997
+27.800239999999999,38.488709999999998
+27.800560000000001,38.488599999999998</coordinates>
+        </LinearRing>
+      </outerBoundaryIs>
+    </Polygon>
+  </Placemark>
+</kml>
