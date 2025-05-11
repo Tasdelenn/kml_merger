@@ -1,7 +1,7 @@
 // kml_types.rs
 // Module defining KML data structures and types
 
-use serde::Deserialize;
+
 use std::collections::HashMap;
 
 /// Represents a KML file with its name and content

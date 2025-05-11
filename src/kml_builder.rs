@@ -2,7 +2,7 @@
 // Module for building KML output
 
 use crate::error::AppResult;
-use crate::kml_types::{KmlDocument, Placemark, Style, StyleMap, StyleSettings};
+use crate::kml_types::{KmlDocument, Style, StyleMap, StyleSettings};
 use crate::traits::KmlBuilderTrait;
 use regex;
 

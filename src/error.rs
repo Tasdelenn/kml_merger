@@ -9,7 +9,6 @@ pub enum AppError {
     IoError(std::io::Error),
     XmlError(quick_xml::Error),
     ParseError(String),
-    MergeError(String),
     ValidationError(String),
 }
 
@@ -19,7 +18,6 @@ impl fmt::Display for AppError {
             AppError::IoError(err) => write!(f, "I/O error: {}", err),
             AppError::XmlError(err) => write!(f, "XML parsing error: {}", err),
             AppError::ParseError(msg) => write!(f, "Parse error: {}", msg),
-            AppError::MergeError(msg) => write!(f, "Merge error: {}", msg),
             AppError::ValidationError(msg) => write!(f, "Validation error: {}", msg),
         }
     }
