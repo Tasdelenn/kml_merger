@@ -3,238 +3,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KML Merger & Stylizer</title>
+    <title>KML Merger & Styler</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        /* Custom styles for dark mode toggle if needed */
-        .dark .dark\:bg-gray-800 { background-color: #1f2937; }
-        .dark .dark\:bg-gray-900 { background-color: #111827; }
-        .dark .dark\:text-gray-200 { color: #e5e7eb; }
-        .dark .dark\:text-gray-400 { color: #9ca3af; }
-        .dark .dark\:border-gray-700 { border-color: #374151; }
-        .dark .dark\:hover\:border-blue-400 { border-color: #60a5fa; }
-        .dark .dark\:bg-gray-700 { background-color: #374151; }
-        .dark .dark\:shadow-md-dark { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.05); }
+        .dark .dark\:bg-slate-800 { background-color: #1e293b; }
+        .dark .dark\:bg-slate-900 { background-color: #0f172a; }
+        .dark .dark\:text-slate-200 { color: #e2e8f0; }
+        .dark .dark\:text-slate-400 { color: #94a3b8; }
+        .dark .dark\:border-slate-700 { border-color: #334155; }
+        .dark .dark\:hover\:border-sky-400 { border-color: #38bdf8; }
+        .dark .dark\:bg-slate-700 { background-color: #334155; }
+        .dark .dark\:shadow-lg-dark { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05), 0 0 0 1px rgba(255,255,255,0.05); }
+        .progress-bar-striped::-webkit-progress-value {
+            background-image: -webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25));
+            background-size: 35px 20px, 100% 100%, 100% 100%;
+        }
+        .progress-bar-striped::-moz-progress-bar {
+            background-image: -moz-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -moz-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25));
+            background-size: 35px 20px, 100% 100%, 100% 100%;
+        }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300">
-    <div class="container mx-auto px-4 py-8 max-w-2xl">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-200 flex-grow">Merge & Style KML Files</h1>
-            <button id="theme-toggle" class="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
+<body class="bg-slate-100 dark:bg-slate-900 min-h-screen transition-colors duration-300 flex flex-col items-center justify-center p-4 font-sans">
+    <div class="w-full max-w-xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl dark:shadow-lg-dark p-6 sm:p-8 space-y-8">
+        <header class="flex flex-col items-center text-center mb-6">
+            <div class="flex items-center text-4xl sm:text-5xl font-bold text-sky-600 dark:text-sky-400">
+                <i class="fas fa-layer-group mr-3 text-sky-500 dark:text-sky-300"></i> 
+                <h1 class="tracking-tight">KML Merge & Stylize</h1>
+            </div>
+            <p class="text-base text-slate-600 dark:text-slate-400 mt-2">Easily merge and customize your KML files.</p>
+        </header>
+
+        <div id="drop-zone" class="border-4 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-10 text-center cursor-pointer hover:border-sky-500 dark:hover:border-sky-400 transition-all duration-300 ease-in-out bg-slate-50 dark:bg-slate-700/30 flex flex-col items-center justify-center min-h-[180px] hover:bg-sky-50 dark:hover:bg-sky-700/40">
+            <i class="fas fa-file-arrow-up text-5xl text-sky-500 dark:text-sky-400 mb-4"></i>
+            <label class="block">
+                <span class="text-slate-700 dark:text-slate-200 font-semibold text-lg">Drag & drop KML files here, or click to select</span>
+                <input type="file" id="kml-files" multiple accept=".kml" class="hidden">
+            </label>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Only .kml files are accepted.</p>
+        </div>
+
+        <div id="file-list" class="space-y-5 max-h-80 overflow-y-auto p-1 pr-2 mt-4">
+            <p id="no-files-message" class="text-center text-slate-500 dark:text-slate-400 py-4">No files selected yet. Please drag and drop your KML files or click the button above to select them.</p>
+        </div>
+
+        <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 dark:bg-red-800/30 dark:border-red-600 dark:text-red-300 p-4 rounded-md text-sm font-medium"></div>
+        
+        <div id="progress-section" class="hidden space-y-2 mt-4">
+            <div class="flex justify-between mb-1">
+                <span id="progress-text" class="text-base font-medium text-sky-700 dark:text-sky-400">İşleniyor...</span>
+                <span id="progress-percentage" class="text-sm font-medium text-sky-700 dark:text-sky-400">0%</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+                <div id="progress-bar" class="bg-sky-500 h-2.5 rounded-full transition-all duration-300 ease-out progress-bar-striped" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <form id="upload-form" class="space-y-6">
+            <div>
+                <label for="output-filename" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Output Filename (optional):</label>
+                <input type="text" id="output-filename" name="outputFilename" placeholder="merged_output.kml (optional)" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:text-slate-200 text-sm placeholder-slate-400 dark:placeholder-slate-500">
+            </div>
+            <button type="submit" id="merge-button" disabled
+                class="w-full flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-lg shadow-md text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:bg-green-600 dark:hover:bg-green-500 dark:focus:ring-offset-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150">
+                <i class="fas fa-check-circle mr-2"></i> Merge Files
+            </button>
+        </form>
+
+        <footer class="mt-10 pt-8 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <div class="text-center sm:text-left">
+                <p class="text-sm text-slate-600 dark:text-slate-400">If this app is useful to you, consider buying me a coffee!</p>
+                <a href="https://buymeacoffee.com/haqan" target="_blank" rel="noopener noreferrer" class="inline-flex items-center mt-2 px-4 py-2 bg-yellow-400 text-slate-900 rounded-lg font-semibold hover:bg-yellow-500 transition-colors shadow-md hover:shadow-lg">
+                    <i class="fas fa-mug-hot mr-2"></i> Buy Me a Coffee
+                </a>
+            </div>
+            <button id="theme-toggle" class="p-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-offset-slate-800">
                 <svg id="theme-toggle-dark-icon" class="hidden h-6 w-6" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
                 <svg id="theme-toggle-light-icon" class="hidden h-6 w-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 7.071a1 1 0 001.414 1.414l.707-.707a1 1 0 00-1.414-1.414l-.707.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
             </button>
-        </div>
-        
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-md-dark p-6 mb-6">
-            <div class="border-4 border-dashed border-blue-300 hover:border-blue-500 dark:hover:border-blue-400 bg-gray-50 dark:bg-gray-700 rounded-lg p-8 text-center transition-colors duration-300" id="drop-zone">
-                <label class="block">
-                    <span class="inline-block px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer hover:bg-blue-600 transition-colors">
-                        Select KML Files
-                    </span>
-                    <input type="file" id="kml-files" accept=".kml" multiple class="hidden">
-                </label>
-                <p class="mt-2 text-sm text-gray-600">or drag and drop files here</p>
-            </div>
-
-            <div id="file-list" class="mt-4 space-y-2">
-                <p class="text-red-600 dark:text-red-400 italic text-center font-semibold" id="no-files-message">No files selected yet</p>
-            </div>
-        </div>
-
-        <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 dark:bg-red-900 dark:border-red-700 dark:text-red-300 px-4 py-3 rounded relative mb-4"></div>
-        
-        <div id="loading" class="hidden text-center py-4">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 dark:border-blue-400 mx-auto"></div>
-            <p class="mt-2 text-gray-600 dark:text-gray-400">Merging files...</p>
-        </div>
-
-        <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
-            <div class="mb-4">
-                <label for="output-filename" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Output File Name (optional, without .kml extension):</label>
-                <input type="text" id="output-filename" name="outputFilename" class="shadow appearance-none border dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="merged">
-            </div>
-            <button type="submit" id="merge-button" disabled
-                class="w-full py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 dark:hover:bg-blue-400 transition-colors disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed">
-                Merge Files
-            </button>
-        </form>
+        </footer>
     </div>
 
     <script>
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const htmlElement = document.documentElement;
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                htmlElement.classList.add('dark');
+                themeToggleDarkIcon.classList.remove('hidden');
+                themeToggleLightIcon.classList.add('hidden');
+            } else {
+                htmlElement.classList.remove('dark');
+                themeToggleDarkIcon.classList.add('hidden');
+                themeToggleLightIcon.classList.remove('hidden');
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        let preferredTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(preferredTheme);
+
+        themeToggleBtn.addEventListener('click', () => {
+            applyTheme(htmlElement.classList.contains('dark') ? 'light' : 'dark');
+        });
+
         let fileCounter = 0;
-        const fileList = document.getElementById('file-list');
+        const fileListEl = document.getElementById('file-list');
         const uploadForm = document.getElementById('upload-form');
         const mergeButton = document.getElementById('merge-button');
         const dropZone = document.getElementById('drop-zone');
-        const noFilesMessage = document.getElementById('no-files-message');
+        const noFilesMessageEl = document.getElementById('no-files-message');
+        const errorMessageEl = document.getElementById('error-message');
+        const progressSection = document.getElementById('progress-section');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const progressPercentage = document.getElementById('progress-percentage');
 
-        function handleFiles(files, index) {
-            if (files.length === 0) return;
-            
-            document.getElementById('error-message').classList.add('hidden');
-            
-            if (noFilesMessage) {
-                noFilesMessage.remove();
+        function updateMergeButtonState(isProcessing = false, isError = false) {
+            mergeButton.disabled = fileListEl.querySelectorAll('.file-item').length === 0 || isProcessing;
+            mergeButton.classList.remove('bg-green-500', 'hover:bg-green-600', 'dark:bg-green-600', 'dark:hover:bg-green-500', 'bg-orange-500', 'hover:bg-orange-600', 'dark:bg-orange-600', 'dark:hover:bg-orange-500', 'bg-sky-500', 'hover:bg-sky-600', 'dark:bg-sky-600', 'dark:hover:bg-sky-500');
+            mergeButton.innerHTML = ''; // Clear existing content
+            const icon = document.createElement('i');
+            icon.classList.add('fas', 'mr-2');
+
+            if (isProcessing) {
+                mergeButton.classList.add('bg-orange-500', 'hover:bg-orange-600', 'dark:bg-orange-600', 'dark:hover:bg-orange-500');
+                icon.classList.add('fa-spinner', 'fa-spin');
+                mergeButton.appendChild(icon);
+                mergeButton.appendChild(document.createTextNode(' Merging...'));
+                progressSection.classList.remove('hidden');
+            } else if (isError) {
+                 mergeButton.classList.add('bg-green-500', 'hover:bg-green-600', 'dark:bg-green-600', 'dark:hover:bg-green-500'); // Or red if preferred for error state
+                icon.classList.add('fa-exclamation-circle');
+                mergeButton.appendChild(icon);
+                mergeButton.appendChild(document.createTextNode(' Try Again'));
+                progressSection.classList.add('hidden');
+            } else {
+                mergeButton.classList.add('bg-green-500', 'hover:bg-green-600', 'dark:bg-green-600', 'dark:hover:bg-green-500');
+                icon.classList.add('fa-check-circle');
+                mergeButton.appendChild(icon);
+                mergeButton.appendChild(document.createTextNode(' Merge Files'));
+                progressSection.classList.add('hidden');
             }
-            mergeButton.disabled = false;
+        }
+
+        function handleFiles(files) {
+            if (files.length === 0) return;
+            errorMessageEl.classList.add('hidden');
+            if (noFilesMessageEl) noFilesMessageEl.style.display = 'none';
             
-            let validFiles = 0;
+            let validFilesAdded = false;
             for (const file of files) {
                 if (file.name.toLowerCase().endsWith('.kml')) {
                     addFileToList(file);
-                    validFiles++;
+                    validFilesAdded = true;
                 }
             }
-            
-            mergeButton.disabled = validFiles === 0;
+            updateMergeButtonState();
         }
 
         function addFileToList(file) {
             const fileId = `file-${fileCounter}`;
-            const fileIndex = fileCounter++; // Benzersiz index için
+            const fileIndex = fileCounter++;
 
             const fileItem = document.createElement('div');
-            fileItem.className = 'file-item bg-gray-50 dark:bg-gray-700 p-3 rounded-lg mb-2';
+            fileItem.className = 'file-item bg-slate-100 dark:bg-slate-700 p-4 rounded-xl shadow-md flex flex-col space-y-3';
             fileItem.dataset.fileName = file.name;
-            fileItem.dataset.fileIndex = fileIndex; // Stilleri almak için index'i sakla
+            fileItem.dataset.fileIndex = fileIndex;
             fileItem.id = fileId;
             fileItem.fileData = file;
 
             fileItem.innerHTML = `
                 <div class="flex items-center justify-between">
-                    <span class="text-gray-700 dark:text-gray-200 truncate flex-1 font-medium">${file.name}</span>
-                    <button type="button" class="ml-2 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300" onclick="removeFile('${fileId}')">
+                    <span class="text-slate-700 dark:text-slate-200 truncate flex-1 font-semibold"><i class="fas fa-file-lines mr-2 text-sky-600 dark:text-sky-400"></i>${file.name}</span>
+                    <button type="button" class="ml-3 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 p-1.5 rounded-full hover:bg-red-100 dark:hover:bg-red-700/50 transition-colors" onclick="removeFile('${fileId}')">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                     </button>
                 </div>
-                <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600 grid grid-cols-2 sm:grid-cols-4 gap-2 items-center">
+                <div class="pt-4 border-t border-slate-300 dark:border-slate-600 grid grid-cols-2 sm:grid-cols-4 gap-4 items-center">
                     <div>
-                        <label for="line-color-${fileIndex}" class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Line Color:</label>
-                        <input type="color" id="line-color-${fileIndex}" value="#ff0000" class="h-8 w-full border border-gray-300 dark:border-gray-600 rounded p-1 dark:bg-gray-600 dark:text-gray-200">
+                        <label for="line-color-${fileIndex}" class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Line Color:</label>
+                        <input type="color" id="line-color-${fileIndex}" value="#ff0000" class="h-9 w-full border border-slate-300 dark:border-slate-500 rounded-md p-1 dark:bg-slate-600 dark:text-slate-200 cursor-pointer focus:ring-1 focus:ring-sky-500">
                     </div>
                     <div>
-                        <label for="line-width-${fileIndex}" class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Line Width:</label>
-                        <input type="number" id="line-width-${fileIndex}" value="2" min="1" class="h-8 w-full border border-gray-300 dark:border-gray-600 rounded text-center p-1 dark:bg-gray-600 dark:text-gray-200">
+                        <label for="line-width-${fileIndex}" class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Line Width:</label>
+                        <input type="number" id="line-width-${fileIndex}" value="2" min="1" class="h-9 w-full border border-slate-300 dark:border-slate-500 rounded-md text-center p-1 dark:bg-slate-600 dark:text-slate-200 focus:ring-1 focus:ring-sky-500">
                     </div>
                     <div>
-                        <label for="fill-color-${fileIndex}" class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Fill Color:</label>
-                        <input type="color" id="fill-color-${fileIndex}" value="#00ff00" class="h-8 w-full border border-gray-300 dark:border-gray-600 rounded p-1 dark:bg-gray-600 dark:text-gray-200">
+                        <label for="fill-color-${fileIndex}" class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Fill Color:</label>
+                        <input type="color" id="fill-color-${fileIndex}" value="#00ff00" class="h-9 w-full border border-slate-300 dark:border-slate-500 rounded-md p-1 dark:bg-slate-600 dark:text-slate-200 cursor-pointer focus:ring-1 focus:ring-sky-500">
                     </div>
                     <div>
-                        <label for="fill-opacity-${fileIndex}" class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Fill Opacity (%):</label>
-                        <input type="number" id="fill-opacity-${fileIndex}" value="50" min="0" max="100" class="h-8 w-full border border-gray-300 dark:border-gray-600 rounded text-center p-1 dark:bg-gray-600 dark:text-gray-200">
+                        <label for="fill-opacity-${fileIndex}" class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Fill Opacity (%):</label>
+                        <input type="number" id="fill-opacity-${fileIndex}" value="50" min="0" max="100" class="h-9 w-full border border-slate-300 dark:border-slate-500 rounded-md text-center p-1 dark:bg-slate-600 dark:text-slate-200 focus:ring-1 focus:ring-sky-500">
                     </div>
                 </div>
             `;
-            fileList.appendChild(fileItem);
+            fileListEl.appendChild(fileItem);
         }
 
         function removeFile(fileId) {
             const fileItem = document.getElementById(fileId);
-            if (fileItem) {
-                fileItem.remove();
-                
-                if (fileList.children.length === 0) {
-                    fileList.innerHTML = '<p class="text-red-600 dark:text-red-400 italic text-center font-semibold" id="no-files-message">No files selected yet</p>';
-                    mergeButton.disabled = true;
-                }
+            if (fileItem) fileItem.remove();
+            if (fileListEl.children.length === 0 || (fileListEl.children.length === 1 && fileListEl.children[0].id === 'no-files-message')) {
+                if (noFilesMessageEl) noFilesMessageEl.style.display = 'block';
             }
+            updateMergeButtonState();
         }
 
         document.getElementById('kml-files').addEventListener('change', (e) => handleFiles(e.target.files));
 
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('border-blue-500');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('border-blue-500');
-        });
-
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-sky-500', 'bg-sky-50', 'dark:bg-sky-700/30'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-sky-500', 'bg-sky-50', 'dark:bg-sky-700/30'); });
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
-            dropZone.classList.remove('border-blue-500');
+            dropZone.classList.remove('border-sky-500', 'bg-sky-50', 'dark:bg-sky-700/30');
             handleFiles(e.dataTransfer.files);
         });
 
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            const fileItems = Array.from(fileList.children).filter(item => item.id && item.fileData);
+            const fileItems = Array.from(fileListEl.children).filter(item => item.id && item.fileData);
 
             if (fileItems.length === 0) {
-                const errorMessage = document.getElementById('error-message');
-                errorMessage.textContent = 'Please select at least one KML file.';
-                errorMessage.classList.remove('hidden');
+                errorMessageEl.textContent = 'Please select at least one KML file.';
+                errorMessageEl.classList.remove('hidden');
                 return;
             }
+
+            updateMergeButtonState(true);
+            progressBar.style.width = '0%';
+            progressPercentage.textContent = '0%';
+            progressText.textContent = 'Initializing...';
 
             const formData = new FormData();
             const styles = {};
             fileItems.forEach((item) => {
-                formData.append('files', item.fileData, item.dataset.fileName); // Backend'in 'files' olarak beklemesi için
+                formData.append('files', item.fileData, item.dataset.fileName);
                 const fileIndex = item.dataset.fileIndex;
-
-                const lineColorInput = document.getElementById(`line-color-${fileIndex}`);
-                const lineWidthInput = document.getElementById(`line-width-${fileIndex}`);
-                const fillColorInput = document.getElementById(`fill-color-${fileIndex}`);
-                const fillOpacityInput = document.getElementById(`fill-opacity-${fileIndex}`);
-
-                // Değerlerin varlığını kontrol et, yoksa varsayılan kullan
-                const lineColor = lineColorInput ? lineColorInput.value : '#ff0000';
-                const lineWidth = lineWidthInput ? parseInt(lineWidthInput.value, 10) : 2;
-                const fillColor = fillColorInput ? fillColorInput.value : '#00ff00';
-                const fillOpacity = fillOpacityInput ? parseInt(fillOpacityInput.value, 10) : 50;
-
+                const lineColor = document.getElementById(`line-color-${fileIndex}`)?.value || '#ff0000';
+                const lineWidth = parseInt(document.getElementById(`line-width-${fileIndex}`)?.value, 10) || 2;
+                const fillColor = document.getElementById(`fill-color-${fileIndex}`)?.value || '#00ff00';
+                const fillOpacity = parseInt(document.getElementById(`fill-opacity-${fileIndex}`)?.value, 10) || 50;
                 const kmlFillOpacity = Math.round((fillOpacity / 100) * 255).toString(16).padStart(2, '0');
-                // KML renk formatı: aabbggrr (alpha, blue, green, red)
-                const kmlLineColor = `ff${lineColor.substring(5, 7)}${lineColor.substring(3, 5)}${lineColor.substring(1, 3)}`; // Tam opak çizgi (ff)
+                const kmlLineColor = `ff${lineColor.substring(5, 7)}${lineColor.substring(3, 5)}${lineColor.substring(1, 3)}`;
                 const kmlFillColor = `${kmlFillOpacity}${fillColor.substring(5, 7)}${fillColor.substring(3, 5)}${fillColor.substring(1, 3)}`;
-
-                styles[item.dataset.fileName] = {
-                    line_color: kmlLineColor,
-                    line_width: lineWidth,
-                    fill_color: kmlFillColor
-                    // fill_opacity KML rengine dahil edildi
-                };
+                styles[item.dataset.fileName] = { line_color: kmlLineColor, line_width: lineWidth, fill_color: kmlFillColor };
             });
             formData.append('styles', JSON.stringify(styles));
+            const outputFilename = document.getElementById('output-filename').value.trim();
+            if (outputFilename) formData.append('outputFilename', outputFilename);
 
-            // Add output filename to form data if provided
-            const outputFilenameInput = document.getElementById('output-filename');
-            const outputFilename = outputFilenameInput.value.trim();
-            if (outputFilename) {
-                formData.append('outputFilename', outputFilename);
-            }
+            // Simulate progress for demo
+            let currentProgress = 0;
+            progressText.textContent = 'Uploading files...';
+            const progressInterval = setInterval(() => {
+                currentProgress += 10;
+                if (currentProgress <= 100) {
+                    progressBar.style.width = `${currentProgress}%`;
+                    progressPercentage.textContent = `${currentProgress}%`;
+                    if(currentProgress > 30 && currentProgress < 70) progressText.textContent = 'Processing files...';
+                    else if (currentProgress >= 70) progressText.textContent = 'Finalizing merge...';
+                }
+                if (currentProgress >= 100) clearInterval(progressInterval);
+            }, 200);
 
-            const loading = document.getElementById('loading');
-            loading.classList.remove('hidden');
-            mergeButton.disabled = true;
-            
             try {
-                const response = await fetch('/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                
+                const response = await fetch('/upload', { method: 'POST', body: formData });
+                clearInterval(progressInterval); // Clear simulation on actual response
+                progressBar.style.width = '100%';
+                progressPercentage.textContent = '100%';
+
                 if (!response.ok) {
-                    throw new Error('File merge operation failed');
+                    const errorData = await response.text();
+                    throw new Error(`File merge failed: ${response.status} ${errorData || ''}`);
                 }
                 
+                progressText.textContent = 'Processing Complete!';
+                mergeButton.classList.remove('bg-orange-500', 'hover:bg-orange-600');
+                mergeButton.classList.add('bg-sky-500', 'hover:bg-sky-600', 'dark:bg-sky-600', 'dark:hover:bg-sky-500');
+                mergeButton.innerHTML = '<i class="fas fa-download mr-2"></i> Download Starting...';
+
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                // Use filename from header if available, otherwise default
                 const contentDisposition = response.headers.get('content-disposition');
-                let downloadFilename = 'merged.kml'; // Default filename
+                let downloadFilename = 'merged.kml';
                 if (contentDisposition) {
-                    const filenameMatch = contentDisposition.match(/filename="?(.+?)"?$/);
-                    if (filenameMatch && filenameMatch.length > 1) {
-                        downloadFilename = filenameMatch[1];
+                    const filenameMatch = contentDisposition.match(/filename\*?=(?:UTF-8'')?([^;]+)/i) || contentDisposition.match(/filename="?(.+?)"?$/);
+                    if (filenameMatch && filenameMatch[1]) {
+                        downloadFilename = decodeURIComponent(filenameMatch[1].replace(/"/g, ''));
                     }
                 }
                 a.download = downloadFilename;
@@ -242,15 +305,22 @@
                 a.click();
                 window.URL.revokeObjectURL(url);
                 a.remove();
+                setTimeout(() => { // Give time for download to start
+                    updateMergeButtonState(false);
+                    progressSection.classList.add('hidden');
+                }, 1500);
             } catch (error) {
-                const errorMessage = document.getElementById('error-message');
-                errorMessage.textContent = error.message.replace('Dosya yüklenmedi', 'No files uploaded').replace('birleştirme', 'merge');
-                errorMessage.classList.remove('hidden');
-            } finally {
-                loading.classList.add('hidden');
-                mergeButton.disabled = false;
+                clearInterval(progressInterval);
+                errorMessageEl.textContent = error.message.replace('Dosya yüklenmedi', 'No files uploaded').replace('birleştirme', 'merge').replace('Dosya birleştirme işlemi başarısız oldu', 'File merge failed');
+                errorMessageEl.classList.remove('hidden');
+                updateMergeButtonState(false, true);
+                progressText.textContent = 'Error Occurred!';
+                progressBar.style.width = '100%';
+                progressBar.classList.remove('bg-sky-500');
+                progressBar.classList.add('bg-red-500');
             }
         });
+        updateMergeButtonState(); // Initial state
     </script>
 </body>
 </html>
