@@ -23,6 +23,14 @@
             background-image: -moz-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -moz-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25));
             background-size: 35px 20px, 100% 100%, 100% 100%;
         }
+        #drop-zone:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-color: #38bdf8;
+        }
+        .dark #drop-zone:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: #38bdf8;
+        }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-900 min-h-screen transition-colors duration-300 flex flex-col items-center justify-center p-4 font-sans">
@@ -35,7 +43,7 @@
             <p class="text-base text-slate-600 dark:text-slate-400 mt-2">Easily merge and customize your KML files.</p>
         </header>
 
-        <div id="drop-zone" class="border-4 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-10 text-center cursor-pointer hover:border-sky-500 dark:hover:border-sky-400 transition-all duration-300 ease-in-out bg-slate-50 dark:bg-slate-700/30 flex flex-col items-center justify-center min-h-[180px] hover:bg-sky-50 dark:hover:bg-sky-700/40">
+        <div id="drop-zone" class="border-4 border-dashed border-emerald-400 hover:border-sky-400 hover:bg-slate-100/50 dark:border-emerald-500 dark:hover:border-sky-300 dark:hover:bg-slate-700/50 rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all duration-200" onclick="document.getElementById('kml-files').click();">
             <i class="fas fa-file-arrow-up text-5xl text-sky-500 dark:text-sky-400 mb-4"></i>
             <label class="block">
                 <span class="text-slate-700 dark:text-slate-200 font-semibold text-lg">Drag & drop KML files here, or click to select</span>
@@ -103,6 +111,17 @@
             }
             localStorage.setItem('theme', theme);
         }
+        
+        // Sayfa yüklendiğinde tema ikonlarının görünürlüğünü düzelt
+        window.addEventListener('DOMContentLoaded', () => {
+            if (htmlElement.classList.contains('dark')) {
+                themeToggleDarkIcon.classList.remove('hidden');
+                themeToggleLightIcon.classList.add('hidden');
+            } else {
+                themeToggleDarkIcon.classList.add('hidden');
+                themeToggleLightIcon.classList.remove('hidden');
+            }
+        });
 
         let preferredTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         applyTheme(preferredTheme);
@@ -220,6 +239,45 @@
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-sky-500', 'bg-sky-50', 'dark:bg-sky-700/30'); });
         dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-sky-500', 'bg-sky-50', 'dark:bg-sky-700/30'); });
         dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-sky-500', 'bg-sky-50', 'dark:bg-sky-700/30');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileItems = Array.from(fileListEl.children).filter(item => item.id && item.fileData);
+
+            if (fileItems.length === 0) {
+                errorMessageEl.textContent = 'Please select at least one KML file.';
+                errorMessageEl.classList.remove('hidden');
+                return;
+            }
+
+            updateMergeButtonState(true);
+            progressBar.style.width = '0%';
+            progressPercentage.textContent = '0%';
+            progressText.textContent = 'Initializing...';
+
+            const formData = new FormData();
+            const styles = {};
+            fileItems.forEach((item) => {
+                formData.append('files', item.fileData, item.dataset.fileName);
+                const fileIndex = item.dataset.fileIndex;
+                const lineColor = document.getElementById(`line-color-${fileIndex}`)?.value || '#ff0000';
+                const lineWidth = parseInt(document.getElementById(`line-width-${fileIndex}`)?.value, 10) || 2;
+                const fillColor = document.getElementById(`fill-color-${fileIndex}`)?.value || '#00ff00';
+                const fillOpacity = parseInt(document.getElementById(`fill-opacity-${fileIndex}`)?.value, 10) || 50;
+                const kmlFillOpacity = Math.round((fillOpacity / 100) * 255).toString(16).padStart(2, '0');
+                const kmlLineColor = `ff${lineColor.substring(5, 7)}${lineColor.substring(3, 5)}${lineColor.substring(1, 3)}`;
+                const kmlFillColor = `${kmlFillOpacity}${fillColor.substring(5, 7)}${fillColor.substring(3, 5)}${fillColor.substring(1, 3)}`;
+                styles[item.dataset.fileName] = { line_color: kmlLineColor, line_width: lineWidth, fill_color: kmlFillColor };
+            });
+            formData.append('styles', JSON.stringify(styles));
+            const outputFilename = document.getElementById('output-filename').value.trim();
+            if (outputFilename) formData.append('outputFilename', outputFilename);
+
+            /* CSS kodu script içinde değil, style tag'i içinde olmalı */
             e.preventDefault();
             dropZone.classList.remove('border-sky-500', 'bg-sky-50', 'dark:bg-sky-700/30');
             handleFiles(e.dataTransfer.files);
